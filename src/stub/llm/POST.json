@@ -1,0 +1,23 @@
+{
+  "id": "chatcmpl-97FGZ3Qofubm3IE6DTfZtLdGiR2mw",
+  "object": "chat.completion",
+  "created": 1711514007,
+  "model": "gpt-3.5-turbo-0125",
+  "choices": [
+    {
+      "index": 0,
+      "message": {
+        "role": "assistant",
+        "content": "### Multiple Choice Questions:\n\n1. How many types of loops are available in Java?\n   A. 2\n   B. 3\n   C. 4\n   D. 5\n\n2. Which loop is ideal when the number of iterations is known?\n   A. while loop\n   B. do-while loop\n   C. for loop\n   D. enhanced for loop\n\n3. Which keyword is used to skip the current iteration in a loop and continue with the next iteration?\n   A. skip\n   B. next\n   C. break\n   D. continue\n\n4. What type of loop is best suited for iterating through arrays or collections?\n   A. while loop\n   B. do-while loop\n   C. for loop\n   D. enhanced for loop\n\n### Evaluation:\n\n1. B. 3\n2. C. for loop\n3. D. continue\n4. D. enhanced for loop"
+      },
+      "logprobs": null,
+      "finish_reason": "stop"
+    }
+  ],
+  "usage": {
+    "prompt_tokens": 51,
+    "completion_tokens": 196,
+    "total_tokens": 247
+  },
+  "system_fingerprint": "fp_3bc1b5746c"
+}

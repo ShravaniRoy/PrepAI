@@ -1,95 +1,115 @@
-import Image from "next/image";
-import styles from "./page.module.css";
+"use client";
+import "./page.css";
+import useLLM, { useChat } from "usellm";
+import { useState } from "react";
+import {
+  Input,
+  Button,
+  Form,
+  FormGroup,
+  Col,
+  Container,
+  Row,
+} from "reactstrap";
+import Markdown from "react-markdown";
+import Quiz from './quiz';
+import Explore from './explore';
+// const {
+//   isLoading,
+//   messages,
+//   sendMessage,
+//   callFunction,
+//   sendFunctionOutput,
+//   input,
+//   setInput,
+// } = useChat(options);
 
 export default function Home() {
+  const llm = useLLM();
+  const [topic, setTopic] = useState("");
+  const [result, setResult] = useState("");
+  const [pLanguage, setPLanguage] = useState("");
+  const [showAnswers, setShowAnswers] = useState(false);
+  const [activeTab, setActiveTab] = useState("Quiz");
+
+  const { input, setInput, messages, sendMessage } = useChat({
+    stream: true,
+    initialMessages: [
+      {
+        role: "assistant",
+        content:
+          "I am a career counsellor, here to curate learning paths to meet your career goals in just 5 steps.",
+      },
+    ],
+  });
+
+  const handleQuiz = async() => {
+    try {
+      await llm.chat({
+        messages: [
+          {
+            role: "system",
+            content: `You're a certification prep planner bot for ${pLanguage}. Given a topic from Java, generate a list of MCQs for it, and evaluate the answers on demand. Keep it short and sweet.`,
+          },
+          { role: "user", content: `Topic: ${topic}` },
+        ],
+        stream: true,
+        type: "json_object",
+        onStream: ({ message }) => setResult(message.content),
+      });
+    } catch (error) {
+      console.error("Something went wrong!", error);
+    }
+  }
+
+  const handleExplore = async () => {
+
+  }
+
+
+
   return (
-    <main className={styles.main}>
-      <div className={styles.description}>
-        <p>
-          Get started by editing&nbsp;
-          <code className={styles.code}>src/app/page.js</code>
-        </p>
-        <div>
-          <a
-            href="https://vercel.com?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            By{" "}
-            <Image
-              src="/vercel.svg"
-              alt="Vercel Logo"
-              className={styles.vercelLogo}
-              width={100}
-              height={24}
-              priority
+    <Container fluid>
+      <Row className="chatroom">
+        <Row className="setBlock">
+          <Row>
+            <nav className="">
+              <Row className="logo">Prep AI</Row>
+              <ul className="navTabs">
+                <li>
+                  <button onClick={() => setActiveTab("Quiz")}>Quiz</button>
+                </li>
+                <li>
+                  <button onClick={() => setActiveTab("Explore")}>
+                    Explore
+                  </button>
+                </li>
+                <li>
+                  <button onClick={() => setActiveTab("Games")}>FlashCards</button>
+                </li>
+              </ul>
+            </nav>
+          </Row>
+          {activeTab === "Quiz" && (
+            <Quiz
+              pLanguage={pLanguage}
+              setPLanguage={setPLanguage}
+              topic={topic}
+              setTopic={setTopic}
+              handleClick={handleQuiz}
+              result={result}
             />
-          </a>
-        </div>
-      </div>
-
-      <div className={styles.center}>
-        <Image
-          className={styles.logo}
-          src="/next.svg"
-          alt="Next.js Logo"
-          width={180}
-          height={37}
-          priority
-        />
-      </div>
-
-      <div className={styles.grid}>
-        <a
-          href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2>
-            Docs <span>-&gt;</span>
-          </h2>
-          <p>Find in-depth information about Next.js features and API.</p>
-        </a>
-
-        <a
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2>
-            Learn <span>-&gt;</span>
-          </h2>
-          <p>Learn about Next.js in an interactive course with&nbsp;quizzes!</p>
-        </a>
-
-        <a
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2>
-            Templates <span>-&gt;</span>
-          </h2>
-          <p>Explore starter templates for Next.js.</p>
-        </a>
-
-        <a
-          href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2>
-            Deploy <span>-&gt;</span>
-          </h2>
-          <p>
-            Instantly deploy your Next.js site to a shareable URL with Vercel.
-          </p>
-        </a>
-      </div>
-    </main>
+          )}
+          {activeTab === "Explore" && (
+            <Explore
+              input = {input}
+              setInput = {setInput}
+              messages = {messages}
+              sendMessage = {sendMessage}
+            />
+          )}
+        </Row>
+      </Row>
+    </Container>
   );
 }
